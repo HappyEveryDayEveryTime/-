@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context.xsd
+        ">
+
+     <!--扫描com.sy下所有的包-->
+     <context:component-scan base-package="com.sy" />
+
+     <!--加载配置文件  引入外部数据源  方式一-->
+     <!--<context:property-placeholder location="classpath:jdbc.properties"></context:property-placeholder>-->
+     <!--加载配置文件  引入外部数据源  方式二-->
+     <bean class="org.springframework.context.support.PropertySourcesPlaceholderConfigurer">
+          <property name="location" value="classpath:jdbc.properties"></property>
+     </bean>
+
+     <!--配置数据源-->
+     <bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
+          <property name="driverClass" value="${jdbc.driverClass}"></property>
+          <property name="jdbcUrl" value="${jdbc.jdbcUrl}"></property>
+          <property name="user" value="${jdbc.user}"></property>
+          <property name="password" value="${jdbc.password}"></property>
+     </bean>
+
+     <!--导入jdbcTemplate 模板-->
+     <bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
+          <property name="dataSource" ref="dataSource"></property>
+     </bean>
+     <!--将jdbcTemplate 注入到 dao中-->
+     <bean id="accountDao" class="com.sy.mapper.impl.AccountDao">
+          <property name="jdbcTemplate" ref="jdbcTemplate"></property>
+     </bean>
+
+
+
+     <!--继承JdbcDaoSupport-->
+     <bean id="accountSupperDao" class="com.sy.mapper.impl.AccountSupperDao">
+          <property name="dataSource" ref="dataSource"></property>
+     </bean>
+
+</beans>
